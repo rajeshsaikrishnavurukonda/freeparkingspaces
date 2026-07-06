@@ -1,0 +1,536 @@
+:root {
+  --color-bg: #f5f5ff;
+  --color-surface: #ffffff;
+  --color-primary: #4f46e5;
+  --color-primary-dark: #3730a3;
+  --color-primary-light: #eef0ff;
+  --color-secondary: #059669;
+  --color-secondary-light: #d1fae5;
+  --color-accent: #ec4899;
+  --color-accent-light: #fce7f3;
+  --color-violet: #7c3aed;
+  --color-violet-light: #ede9fe;
+  --color-amber: #d97706;
+  --color-amber-light: #fef3c7;
+  --color-danger: #dc2626;
+  --color-danger-light: #fee2e2;
+  --color-text: #111827;
+  --color-text-muted: #6b7280;
+  --color-border: #e5e7eb;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --shadow-sm: 0 1px 3px rgba(17, 24, 39, 0.07);
+  --shadow-md: 0 8px 24px rgba(17, 24, 39, 0.1);
+  --shadow-glow: 0 10px 30px rgba(79, 70, 229, 0.22);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.search-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: system-ui, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+  min-height: 100vh;
+}
+
+/* ---------- Header ---------- */
+
+.app-header {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-violet) 55%, var(--color-accent) 100%);
+  padding: 1rem;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  box-shadow: var(--shadow-glow);
+  margin-bottom: 1.25rem;
+}
+
+.app-header__brand {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.app-header__titles {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.app-header__title {
+  color: white;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.app-header__subtitle {
+  display: none;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.78rem;
+}
+
+/* ---------- Main content ---------- */
+
+.search-page__main {
+  padding: 0 0.85rem 2rem;
+}
+
+.disclaimer {
+  font-size: 0.82rem;
+  color: #92400e;
+  background: var(--color-amber-light);
+  border: 1px solid #fde68a;
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.8rem;
+}
+
+.search-bar {
+  display: flex;
+  gap: 0.5rem;
+  margin: 1.25rem 0;
+  background: var(--color-surface);
+  padding: 0.4rem;
+  border-radius: 999px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border);
+}
+
+.search-bar input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.65rem 1rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--color-text);
+}
+
+.search-bar input:focus {
+  outline: none;
+}
+
+.search-bar button {
+  padding: 0.65rem 1.3rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-violet));
+  color: white;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.search-bar button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.35);
+}
+
+.search-bar button:disabled {
+  background: #c7c9f5;
+  cursor: not-allowed;
+}
+
+/* ---------- User location control ---------- */
+
+.user-location-control {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 0 0 1rem;
+  font-size: 0.85rem;
+}
+
+.user-location-control--granted {
+  color: var(--color-secondary);
+  font-weight: 600;
+}
+
+.user-location-control__button {
+  padding: 0.45rem 0.95rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border: 1px solid var(--color-primary-light);
+  border-radius: 999px;
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.user-location-control__button:hover:not(:disabled) {
+  background: #e0e2ff;
+}
+
+.user-location-control__button:disabled {
+  color: #999;
+  background: #f0f0f0;
+  cursor: not-allowed;
+}
+
+.user-location-control__note {
+  color: var(--color-amber);
+}
+
+.user-location-control__privacy-note {
+  color: #9ca3af;
+  font-size: 0.75rem;
+}
+
+/* ---------- Loading / error ---------- */
+
+.loading-spinner {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+  padding: 1rem 0;
+}
+
+.loading-spinner__ring {
+  width: 20px;
+  height: 20px;
+  border: 3px solid var(--color-primary-light);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.error-banner {
+  background: var(--color-danger-light);
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 0.85rem;
+}
+
+.resolved-location {
+  color: var(--color-text);
+  margin-bottom: 0.85rem;
+  font-size: 0.95rem;
+}
+
+.warnings {
+  color: var(--color-amber);
+}
+
+/* ---------- Map + results ---------- */
+
+.search-page__body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.map-view {
+  width: 100%;
+  height: 300px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  border: 3px solid var(--color-surface);
+}
+
+.results-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.results-list__empty {
+  color: var(--color-text-muted);
+}
+
+.parking-spot-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: 1rem;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.parking-spot-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+.parking-spot-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.parking-spot-card__title {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.parking-spot-card__header-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.3rem;
+  flex-shrink: 0;
+}
+
+.distance-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  white-space: nowrap;
+}
+
+.parking-spot-card__type {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-violet);
+}
+
+.parking-spot-card__name {
+  font-size: 1rem;
+  color: var(--color-text);
+}
+
+.confidence-badge {
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.confidence-badge--baseline {
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+}
+
+.confidence-badge--verified {
+  background: var(--color-secondary-light);
+  color: #065f46;
+}
+
+.confidence-badge--ai-inferred {
+  background: var(--color-violet-light);
+  color: #5b21b6;
+}
+
+.parking-spot-card__address {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin-top: 0.15rem;
+}
+
+.parking-spot-card__timings {
+  margin-top: 0.6rem;
+}
+
+.parking-spot-card__headline {
+  font-weight: 700;
+  color: var(--color-secondary);
+}
+
+.parking-spot-card__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.4rem;
+}
+
+.pill {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.18rem 0.6rem;
+  border-radius: 999px;
+  background: #f1f3f4;
+  color: #444;
+  white-space: nowrap;
+}
+
+.pill--duration {
+  background: var(--color-secondary-light);
+  color: #065f46;
+}
+
+.pill--maxstay {
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+}
+
+.pill--day {
+  background: var(--color-accent-light);
+  color: #9d174d;
+}
+
+.parking-spot-card__notes {
+  margin-top: 0.4rem;
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.parking-spot-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.7rem;
+}
+
+.directions-link {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  text-decoration: none;
+  border: 1px solid var(--color-primary-light);
+  background: var(--color-primary-light);
+  border-radius: 999px;
+  padding: 0.35rem 0.8rem;
+  transition: background 0.12s ease, transform 0.12s ease;
+}
+
+.directions-link:hover {
+  background: #e0e2ff;
+  transform: translateY(-1px);
+}
+
+.parking-spot-card__meta {
+  margin-top: 0.6rem;
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+/* ---------- Footer ---------- */
+
+.app-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 1.25rem 0.85rem 2rem;
+  border-top: 1px solid var(--color-border);
+  margin-top: 1.5rem;
+}
+
+.app-footer__link {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.app-footer__note {
+  font-size: 0.78rem;
+  color: #9ca3af;
+}
+
+/* ---------- Privacy policy ---------- */
+
+.privacy-policy {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 3rem;
+  font-family: system-ui, sans-serif;
+  line-height: 1.6;
+  color: var(--color-text);
+  background: var(--color-bg);
+  min-height: 100vh;
+}
+
+.privacy-policy__back {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 1rem;
+}
+
+.privacy-policy__updated {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  margin-bottom: 1.5rem;
+}
+
+.privacy-policy h1 {
+  color: var(--color-primary-dark);
+}
+
+.privacy-policy h2 {
+  font-size: 1.1rem;
+  margin-top: 1.75rem;
+  color: var(--color-violet);
+}
+
+.privacy-policy ul {
+  padding-left: 1.25rem;
+}
+
+/* ---------- Mobile-first breakpoints ---------- */
+
+@media (min-width: 640px) {
+  .app-header {
+    padding: 1.1rem 1.5rem;
+  }
+
+  .app-header__title {
+    font-size: 1.35rem;
+  }
+
+  .app-header__subtitle {
+    display: block;
+  }
+
+  .search-page__main {
+    padding: 0 1.5rem 2rem;
+  }
+
+  .map-view {
+    height: 380px;
+  }
+
+  .results-list {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+
+  .app-footer {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .map-view {
+    height: 440px;
+  }
+}
