@@ -23,6 +23,18 @@ function getClient(): Anthropic | null {
   return client;
 }
 
+// A council's raw data is chunked into many batches, and every batch would
+// otherwise log its own "disabled" warning — harmless but drowns out real
+// errors in production logs. One warning per council per process lifetime is
+// enough to communicate the same thing.
+const disabledWarningLoggedFor = new Set<string>();
+
+function warnAiDisabledOnce(councilName: string): void {
+  if (disabledWarningLoggedFor.has(councilName)) return;
+  disabledWarningLoggedFor.add(councilName);
+  console.warn(`AI normalization disabled (no ANTHROPIC_API_KEY set) — ${councilName} will fall back to OSM baseline only.`);
+}
+
 function extractJsonArray(text: string): string {
   const start = text.indexOf('[');
   const end = text.lastIndexOf(']');
@@ -83,7 +95,7 @@ export async function normalizeRestrictionRows(
   if (cached) return cached;
 
   if (!aiNormalizationEnabled) {
-    console.warn(`AI normalization skipped for ${councilName} (no ANTHROPIC_API_KEY set) — falling back to OSM baseline only.`);
+    warnAiDisabledOnce(councilName);
     cache.set(cacheKey, [], DISABLED_SKIP_CACHE_TTL_SECONDS);
     return [];
   }
@@ -118,7 +130,7 @@ export async function normalizeGenericRows(
   if (cached) return cached;
 
   if (!aiNormalizationEnabled) {
-    console.warn(`AI normalization skipped for ${councilName} (no ANTHROPIC_API_KEY set) — falling back to OSM baseline only.`);
+    warnAiDisabledOnce(councilName);
     cache.set(cacheKey, [], DISABLED_SKIP_CACHE_TTL_SECONDS);
     return [];
   }

@@ -5,7 +5,7 @@ import { parseTabularRows } from '../../utils/parseTabularRows';
 import { isWithinUkBounds, coordinateMatchesRow } from '../../utils/coordinateValidation';
 import { normalizeGenericRows } from '../aiNormalization/normalizeParkingData';
 
-const USER_AGENT = 'uk-free-parking-finder/0.1 (contact: rajesh.saikrishna@gmail.com)';
+const USER_AGENT = 'parkzen/0.1 (contact: support@parkzen.co.uk)';
 const CKAN_SEARCH_URL = 'https://ckan.publishing.service.gov.uk/api/3/action/package_search';
 const SUPPORTED_FORMATS: Record<string, RawContentType> = { CSV: 'csv', JSON: 'json', GEOJSON: 'geojson' };
 const MAX_ROWS_FOR_AI = 300;

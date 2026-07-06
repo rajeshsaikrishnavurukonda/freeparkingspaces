@@ -1,6 +1,6 @@
 import { GeocodedLocation } from '../../shared/types/geocodedLocation';
 
-const USER_AGENT = 'uk-free-parking-finder/0.1 (contact: rajesh.saikrishna@gmail.com)';
+const USER_AGENT = 'parkzen/0.1 (contact: support@parkzen.co.uk)';
 
 interface NominatimResult {
   lat: string;

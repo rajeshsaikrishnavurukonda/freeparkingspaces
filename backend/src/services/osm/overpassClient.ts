@@ -3,7 +3,7 @@ const OVERPASS_ENDPOINTS = [
   'https://overpass.kumi.systems/api/interpreter',
   'https://overpass.osm.ch/api/interpreter',
 ];
-const USER_AGENT = 'uk-free-parking-finder/0.1 (contact: rajesh.saikrishna@gmail.com)';
+const USER_AGENT = 'parkzen/0.1 (contact: support@parkzen.co.uk)';
 
 export interface OverpassElement {
   type: 'node' | 'way' | 'relation';

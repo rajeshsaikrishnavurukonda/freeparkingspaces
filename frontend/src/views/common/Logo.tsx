@@ -1,6 +1,6 @@
 export function Logo({ size = 40 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="UK Free Parking Finder logo">
+    <svg width={size} height={size} viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ParkZen logo">
       <defs>
         <linearGradient id="logo-gradient" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="#1a73e8" />

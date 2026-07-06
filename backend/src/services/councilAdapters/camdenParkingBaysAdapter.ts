@@ -5,7 +5,7 @@ import { parseMaxStayMinutes } from '../osm/osmParkingAdapter';
 import { normalizeRestrictionRows } from '../aiNormalization/normalizeParkingData';
 import { RawRestrictionRow } from '../aiNormalization/prompts';
 
-const USER_AGENT = 'uk-free-parking-finder/0.1 (contact: rajesh.saikrishna@gmail.com)';
+const USER_AGENT = 'parkzen/0.1 (contact: support@parkzen.co.uk)';
 const DATASET_URL = 'https://opendata.camden.gov.uk/resource/7hiv-3r9k.json';
 const FIELDS = 'unique_identifier,restriction_type,times_of_operation,maximum_stay,road_name,postcode,parking_spaces,latitude,longitude';
 const BATCH_SIZE = 25;
