@@ -83,6 +83,23 @@ describe('buildFreeConditions', () => {
     const fc = buildFreeConditions({ highway: 'residential', 'parking:lane:both': 'no' });
     expect(fc.alwaysFree).toBe(false);
   });
+
+  it('surfaces the raw note on a restricted bay without claiming it is free', () => {
+    const fc = buildFreeConditions({
+      highway: 'residential',
+      'parking:condition:right': 'residents',
+      note: 'Parking on right hand side (west) is on part of road only, Mon-Sat 8.30-midnight, Resident permit holders only B(N)',
+    });
+    expect(fc.alwaysFree).toBe(false);
+    expect(fc.freeAfter).toBeNull();
+    expect(fc.notes).toMatch(/check signage/i);
+    expect(fc.notes).toContain('Mon-Sat 8.30-midnight');
+  });
+
+  it('leaves notes null for a restricted bay with no note at all', () => {
+    const fc = buildFreeConditions({ highway: 'residential', 'parking:condition:both': 'residents' });
+    expect(fc.notes).toBeNull();
+  });
 });
 
 describe('classifyType', () => {
@@ -126,5 +143,34 @@ describe('elementToSpot', () => {
       confidence: 'baseline',
     });
     expect(spot?.freeConditions.alwaysFree).toBe(true);
+  });
+
+  it('drops a restricted on-street bay with no note (no reason to believe it is ever free)', () => {
+    const spot = elementToSpot({
+      type: 'way',
+      id: 100,
+      lat: 51.5,
+      lon: -0.1,
+      tags: { highway: 'residential', 'parking:condition:both': 'residents' },
+    });
+    expect(spot).toBeNull();
+  });
+
+  it('surfaces a restricted on-street bay that has a note, uncertain but not excluded', () => {
+    const spot = elementToSpot({
+      type: 'way',
+      id: 101,
+      lat: 51.5,
+      lon: -0.1,
+      tags: {
+        highway: 'residential',
+        'parking:condition:right': 'residents',
+        note: 'Mon-Sat 8.30-midnight, Resident permit holders only',
+      },
+    });
+    expect(spot).not.toBeNull();
+    expect(spot?.type).toBe('on_street_bay');
+    expect(spot?.freeConditions.alwaysFree).toBe(false);
+    expect(spot?.freeConditions.notes).toContain('Mon-Sat 8.30-midnight');
   });
 });

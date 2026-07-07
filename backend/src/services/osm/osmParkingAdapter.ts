@@ -121,17 +121,37 @@ export function parseFeeConditional(raw: string): ParsedFeeConditional | null {
   return null;
 }
 
+/**
+ * Free-text context OSM mappers attach to a way (e.g. "Mon-Sat 8.30-midnight,
+ * Resident permit holders only" on a `parking:condition=residents` street) —
+ * this often describes exactly when a permit-only bay is actually open to
+ * visitors, but as prose rather than a structured tag we can parse into
+ * exact hours.
+ */
+function extractNote(tags: Record<string, string>): string | null {
+  return tags['note'] || tags['description'] || null;
+}
+
 export function buildFreeConditions(tags: Record<string, string>): FreeConditions {
   const fee = tags['fee'];
   const feeConditional = tags['fee:conditional'];
   const onStreetStatus = classifyOnStreetStatus(tags);
   const alwaysFree = fee === 'no' || onStreetStatus === 'explicit-free' || onStreetStatus === 'presumed-free';
   const parsed = feeConditional ? parseFeeConditional(feeConditional) : null;
+  const note = extractNote(tags);
 
   const notesParts: string[] = [];
   if (feeConditional) notesParts.push(`Restriction (raw OSM tag): ${feeConditional}`);
   if (onStreetStatus === 'presumed-free') {
     notesParts.push('No parking restriction found in OpenStreetMap for this street — likely free, but not confirmed. Always check signage.');
+  }
+  if (onStreetStatus === 'restricted' && note) {
+    // Not claimed free — a permit/residents restriction is rarely 24/7 in
+    // practice, and this note may describe exactly when it lifts, but we
+    // can't reliably parse prose into hours without AI. Surface it verbatim
+    // so the user can judge for themselves rather than silently dropping a
+    // spot that might genuinely be free outside the stated times.
+    notesParts.push(`Permit/residents restriction may not apply at all times — check signage. OSM note: "${note}"`);
   }
 
   return {
@@ -144,6 +164,17 @@ export function buildFreeConditions(tags: Record<string, string>): FreeCondition
   };
 }
 
+/**
+ * True for a restricted on-street bay that carries a note potentially
+ * describing when the restriction lifts — worth surfacing to the user (with
+ * a clear "not confirmed free" caveat) rather than excluding outright, since
+ * a bare "residents" tag with no note is genuinely unclear but one with a
+ * note like "Mon-Sat 8.30-midnight" is very likely free outside those hours.
+ */
+function hasNoteworthyRestriction(tags: Record<string, string>): boolean {
+  return classifyOnStreetStatus(tags) === 'restricted' && Boolean(extractNote(tags));
+}
+
 export function classifyType(tags: Record<string, string>): ParkingSpotType {
   if (tags['amenity'] === 'parking') return 'car_park';
   if (tags['highway'] && classifyOnStreetStatus(tags) !== 'none') return 'on_street_bay';
@@ -154,11 +185,19 @@ function hasFreeSignal(fc: FreeConditions): boolean {
   return fc.alwaysFree || Boolean(fc.freeAfter) || Boolean(fc.freeBefore) || Boolean(fc.freeDays?.length);
 }
 
+/**
+ * Maps an Overpass element to a ParkingSpot, or null if it should be dropped
+ * entirely — either missing coordinates, or no reason to believe it's ever
+ * free (no free signal, and no note suggesting the restriction is partial).
+ */
 export function elementToSpot(el: OverpassElement): ParkingSpot | null {
   const tags = el.tags || {};
   const lat = el.lat ?? el.center?.lat;
   const lng = el.lon ?? el.center?.lon;
   if (lat === undefined || lng === undefined) return null;
+
+  const freeConditions = buildFreeConditions(tags);
+  if (!hasFreeSignal(freeConditions) && !hasNoteworthyRestriction(tags)) return null;
 
   return {
     id: `osm-${el.type}-${el.id}`,
@@ -168,7 +207,7 @@ export function elementToSpot(el: OverpassElement): ParkingSpot | null {
     type: classifyType(tags),
     address: tags['addr:street'] ? `${tags['addr:housenumber'] ?? ''} ${tags['addr:street']}`.trim() : null,
     council: null,
-    freeConditions: buildFreeConditions(tags),
+    freeConditions,
     capacity: tags['capacity'] ? parseInt(tags['capacity'], 10) || null : null,
     source: 'osm',
     sourceDetail: `https://www.openstreetmap.org/${el.type}/${el.id}`,
@@ -187,7 +226,7 @@ export async function fetchOsmParkingSpots(lat: number, lng: number, radiusMeter
   if (cached) return cached;
 
   const elements = await queryOverpass(lat, lng, radiusMeters);
-  const spots = elements.map(elementToSpot).filter((s): s is ParkingSpot => s !== null && hasFreeSignal(s.freeConditions));
+  const spots = elements.map(elementToSpot).filter((s): s is ParkingSpot => s !== null);
 
   cache.set(key, spots, env.osmCacheTtlSeconds);
   return spots;
